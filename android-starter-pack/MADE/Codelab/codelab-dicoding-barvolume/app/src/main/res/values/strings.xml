@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Bar Volume</string>
+    <string name="length">Panjang</string>
+    <string name="widht">Lebar</string>
+    <string name="height">Tinggi</string>
+    <string name="calculate">Hitung</string>
+    <string name="result">Hasil</string>
+    <string name="edt_empty">Field ini tidak boleh kosong</string>
+</resources>
