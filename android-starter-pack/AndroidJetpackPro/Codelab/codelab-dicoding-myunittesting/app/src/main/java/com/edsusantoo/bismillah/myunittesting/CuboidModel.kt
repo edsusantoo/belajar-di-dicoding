@@ -16,7 +16,7 @@ open class CuboidModel {
         this.height = height
     }
 
-    fun getVolume(): Double {
+    open fun getVolume(): Double {
         return width * length * height
     }
 
