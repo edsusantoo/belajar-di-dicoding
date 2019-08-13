@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         gone()
                     }
                     v?.id == R.id.btn_calculate_volume -> {
-                        tv_result.text = mainViewModel?.getSurfaceArea().toString()
+                        tv_result.text = mainViewModel?.getVolume().toString()
                         gone()
                     }
                 }

@@ -10,6 +10,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
     private val dummyVolume = "504.0"
@@ -39,6 +40,53 @@ class MainActivityTest {
         onView(withId(R.id.tv_result)).check(matches(isDisplayed()))
         onView(withId(R.id.tv_result)).check(matches(withText(dummyCircumference)))
 
+    }
+
+    @Test
+    fun getSurfaceArea() {
+        onView(withId(R.id.edt_length)).perform(typeText(dummyLength), closeSoftKeyboard())
+        onView(withId(R.id.edt_width)).perform(typeText(dummyWidth), closeSoftKeyboard())
+        onView(withId(R.id.edt_height)).perform(typeText(dummyHeight), closeSoftKeyboard())
+        onView(withId(R.id.btn_save)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_save)).perform(click())
+        onView(withId(R.id.btn_calculate_surface_area)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_calculate_surface_area)).perform(click())
+        onView(withId(R.id.tv_result)).check(matches(isDisplayed()))
+        onView(withId(R.id.tv_result)).check(matches(withText(dummySurfaceArea)))
+    }
+
+    @Test
+    fun getVolume() {
+        onView(withId(R.id.edt_length)).perform(typeText(dummyLength), closeSoftKeyboard())
+        onView(withId(R.id.edt_width)).perform(typeText(dummyWidth), closeSoftKeyboard())
+        onView(withId(R.id.edt_height)).perform(typeText(dummyHeight), closeSoftKeyboard())
+        onView(withId(R.id.btn_save)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_save)).perform(click())
+        onView(withId(R.id.btn_calculate_volume)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_calculate_volume)).perform(click())
+        onView(withId(R.id.tv_result)).check(matches(isDisplayed()))
+        onView(withId(R.id.tv_result)).check(matches(withText(dummyVolume)))
+    }
+
+    @Test
+    fun emptyInput() {
+        onView(withId(R.id.edt_length)).perform(typeText(emptyInput), closeSoftKeyboard())
+        onView(withId(R.id.btn_save)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_save)).perform(click())
+        onView(withId(R.id.edt_length)).check(matches(hasErrorText(fieldEmpty)))
+        onView(withId(R.id.edt_length)).perform(typeText(dummyLength), closeSoftKeyboard())
+        onView(withId(R.id.edt_width)).perform(typeText(emptyInput), closeSoftKeyboard())
+        onView(withId(R.id.btn_save)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_save)).perform(click())
+        onView(withId(R.id.edt_width)).check(matches(hasErrorText(fieldEmpty)))
+        onView(withId(R.id.edt_width)).perform(typeText(dummyWidth), closeSoftKeyboard())
+        onView(withId(R.id.edt_height)).perform(typeText(emptyInput), closeSoftKeyboard())
+        onView(withId(R.id.btn_save)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_save)).perform(click())
+        onView(withId(R.id.edt_height)).check(matches(hasErrorText(fieldEmpty)))
+        onView(withId(R.id.edt_height)).perform(typeText(dummyHeight), closeSoftKeyboard())
+        onView(withId(R.id.btn_save)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_save)).perform(click())
     }
 
 }
