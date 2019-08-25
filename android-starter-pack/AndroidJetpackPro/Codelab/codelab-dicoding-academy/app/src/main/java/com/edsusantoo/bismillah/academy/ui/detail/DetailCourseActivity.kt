@@ -11,6 +11,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.edsusantoo.bismillah.academy.R
 import com.edsusantoo.bismillah.academy.data.CourseEntity
 import com.edsusantoo.bismillah.academy.ui.reader.CourseReaderActivity
+import com.edsusantoo.bismillah.academy.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_detail_course.*
 import kotlinx.android.synthetic.main.content_detail_course.*
 
@@ -23,6 +24,11 @@ class DetailCourseActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_COURSE = "extra_course"
+
+        private fun obtainViewModel(activity: AppCompatActivity): DetailCourseViewModel {
+            val factory = ViewModelFactory.getInstance(activity.application)
+            return ViewModelProviders.of(activity, factory).get(DetailCourseViewModel::class.java)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +37,7 @@ class DetailCourseActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        viewModel = ViewModelProviders.of(this).get(DetailCourseViewModel::class.java)
+        viewModel = obtainViewModel(this)
 
         adapter = DetailCourseAdapter()
 

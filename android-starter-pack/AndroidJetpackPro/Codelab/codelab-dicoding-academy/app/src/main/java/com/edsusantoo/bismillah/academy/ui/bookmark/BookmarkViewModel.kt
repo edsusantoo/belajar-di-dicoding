@@ -2,11 +2,11 @@ package com.edsusantoo.bismillah.academy.ui.bookmark
 
 import androidx.lifecycle.ViewModel
 import com.edsusantoo.bismillah.academy.data.CourseEntity
-import com.edsusantoo.bismillah.academy.utils.DataDummy
+import com.edsusantoo.bismillah.academy.data.source.AcademyRepository
 
-class BookmarkViewModel : ViewModel() {
+class BookmarkViewModel(private val academyRepository: AcademyRepository?) : ViewModel() {
 
-    fun getBookmark(): List<CourseEntity> {
-        return DataDummy.generateDummyCourses()
+    fun getBookmark(): List<CourseEntity>? {
+        return academyRepository?.getBookmarkedCourses()
     }
 }

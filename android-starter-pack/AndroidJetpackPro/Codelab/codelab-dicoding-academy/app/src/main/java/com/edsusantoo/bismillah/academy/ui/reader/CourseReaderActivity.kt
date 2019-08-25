@@ -2,10 +2,12 @@ package com.edsusantoo.bismillah.academy.ui.reader
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import com.edsusantoo.bismillah.academy.R
 import com.edsusantoo.bismillah.academy.ui.reader.content.ModuleContentFragment
 import com.edsusantoo.bismillah.academy.ui.reader.list.ModuleListFragment
+import com.edsusantoo.bismillah.academy.viewmodel.ViewModelFactory
 
 
 class CourseReaderActivity : AppCompatActivity(), CourseReaderCallback {
@@ -14,13 +16,18 @@ class CourseReaderActivity : AppCompatActivity(), CourseReaderCallback {
 
     companion object {
         const val EXTRA_COURSE_ID: String = "extra_course_id"
+        private fun obtainViewModel(activity: FragmentActivity): CourseReaderViewModel {
+            val factory = ViewModelFactory.getInstance(activity.application)
+
+            return ViewModelProviders.of(activity, factory).get(CourseReaderViewModel::class.java)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_course_reader)
 
-        viewModel = ViewModelProviders.of(this).get(CourseReaderViewModel::class.java)
+        viewModel = obtainViewModel(this)
 
         val bundle: Bundle? = intent.extras
         if (bundle != null) {
