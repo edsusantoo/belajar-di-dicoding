@@ -2,10 +2,10 @@ package com.edsusantoo.bismillah.academy.ui.academy
 
 import androidx.lifecycle.ViewModel
 import com.edsusantoo.bismillah.academy.data.CourseEntity
-import com.edsusantoo.bismillah.academy.utils.DataDummy
+import com.edsusantoo.bismillah.academy.data.source.AcademyRepository
 
-class AcademyViewModel : ViewModel() {
-    fun getCourse(): List<CourseEntity> {
-        return DataDummy.generateDummyCourses()
+class AcademyViewModel(private val academyRepository: AcademyRepository?) : ViewModel() {
+    fun getCourse(): List<CourseEntity>? {
+        return academyRepository?.getAllCourses()
     }
 }

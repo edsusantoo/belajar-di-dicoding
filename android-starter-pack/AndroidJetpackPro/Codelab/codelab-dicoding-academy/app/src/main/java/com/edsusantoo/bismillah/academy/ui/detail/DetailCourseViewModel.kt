@@ -3,25 +3,18 @@ package com.edsusantoo.bismillah.academy.ui.detail
 import androidx.lifecycle.ViewModel
 import com.edsusantoo.bismillah.academy.data.CourseEntity
 import com.edsusantoo.bismillah.academy.data.ModuleEntity
-import com.edsusantoo.bismillah.academy.utils.DataDummy
+import com.edsusantoo.bismillah.academy.data.source.AcademyRepository
 
 
-class DetailCourseViewModel : ViewModel() {
-    private var mCourse: CourseEntity? = null
+class DetailCourseViewModel(private val academyRepository: AcademyRepository?) : ViewModel() {
     private var courseId: String? = null
 
     fun getCourse(): CourseEntity? {
-        for (i in 0 until DataDummy.generateDummyCourses().size) {
-            val courseEntity = DataDummy.generateDummyCourses()[i]
-            if (courseEntity.courseId == courseId) {
-                mCourse = courseEntity
-            }
-        }
-        return mCourse
+        return academyRepository?.getCourseWithModules(courseId)
     }
 
-    fun getModules(): List<ModuleEntity> {
-        return DataDummy.generateDummyModules(getCourseId())
+    fun getModules(): List<ModuleEntity>? {
+        return academyRepository?.getAllModulesByCourse(courseId)
     }
 
     fun setCourseId(courseId: String) {

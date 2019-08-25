@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +16,7 @@ import com.edsusantoo.bismillah.academy.data.ModuleEntity
 import com.edsusantoo.bismillah.academy.ui.reader.CourseReaderActivity
 import com.edsusantoo.bismillah.academy.ui.reader.CourseReaderCallback
 import com.edsusantoo.bismillah.academy.ui.reader.CourseReaderViewModel
+import com.edsusantoo.bismillah.academy.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_module_list.*
 
 
@@ -30,11 +32,16 @@ class ModuleListFragment : Fragment(), ModuleListAdapter.MyAdapterClickListener 
         fun newInstance(): Fragment {
             return ModuleListFragment()
         }
+
+        private fun obtainViewModel(activity: FragmentActivity): CourseReaderViewModel {
+            val factory = ViewModelFactory.getInstance(activity.application)
+            return ViewModelProviders.of(activity, factory).get(CourseReaderViewModel::class.java)
+        }
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_module_list, container, false)
@@ -43,7 +50,7 @@ class ModuleListFragment : Fragment(), ModuleListAdapter.MyAdapterClickListener 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (activity != null) {
-            viewModel = ViewModelProviders.of(activity!!).get(CourseReaderViewModel::class.java)
+            viewModel = obtainViewModel(activity!!)
             adapter = ModuleListAdapter(this)
             populateRecyclerView(viewModel.getModules())
         }
@@ -59,7 +66,7 @@ class ModuleListFragment : Fragment(), ModuleListAdapter.MyAdapterClickListener 
         courseReaderCallback = context as CourseReaderActivity
     }
 
-    private fun populateRecyclerView(modules: List<ModuleEntity>) {
+    private fun populateRecyclerView(modules: List<ModuleEntity>?) {
         progress_bar.visibility = View.GONE
         adapter.setModules(modules)
         rv_module.layoutManager = LinearLayoutManager(context)
