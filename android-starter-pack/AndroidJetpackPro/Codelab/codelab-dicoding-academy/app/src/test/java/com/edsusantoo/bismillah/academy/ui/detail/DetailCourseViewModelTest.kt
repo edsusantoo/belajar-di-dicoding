@@ -2,32 +2,34 @@ package com.edsusantoo.bismillah.academy.ui.detail
 
 import com.edsusantoo.bismillah.academy.data.CourseEntity
 import com.edsusantoo.bismillah.academy.data.ModuleEntity
+import com.edsusantoo.bismillah.academy.data.source.AcademyRepository
+import com.edsusantoo.bismillah.academy.utils.FakeDataDummyTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.*
 
 class DetailCourseViewModelTest {
     private lateinit var viewModel: DetailCourseViewModel
-    private lateinit var dummyCourse: CourseEntity
+    private var dummyCourse: CourseEntity = FakeDataDummyTest.generateDummyCourses()[0]
+    private var courseId: String = dummyCourse.courseId
+
+    private var academyRepository: AcademyRepository = mock(AcademyRepository::class.java)
 
     @Before
     fun setup() {
-        viewModel = DetailCourseViewModel()
-        dummyCourse = CourseEntity(
-                "a14",
-                "Menjadi Android Developer Expert",
-                "Dicoding sebagai satu-satunya Google Authorized Training Partner di Indonesia telah melalui proses penyusunan kurikulum secara komprehensif. Semua modul telah diverifikasi langsung oleh Google untuk memastikan bahwa materi yang diajarkan relevan dan sesuai dengan kebutuhan industri digital saat ini. Peserta akan belajar membangun aplikasi Android dengan materi Testing, Debugging, Application, Application UX, Fundamental Application Components, Persistent Data Storage, dan Enhanced System Integration.",
-                "100 Hari",
-                false,
-                "https://www.dicoding.com/images/small/academy/menjadi_android_developer_expert_logo_070119140352.jpg"
-        )
+        viewModel = DetailCourseViewModel(academyRepository)
+        viewModel.setCourseId(courseId)
+
     }
 
     @Test
     fun getCourse() {
-        viewModel.setCourseId(dummyCourse.courseId)
+        `when`(academyRepository.getCourseWithModules(courseId)).thenReturn(dummyCourse)
+
         val courseEntity: CourseEntity? = viewModel.getCourse()
+        verify(academyRepository).getCourseWithModules(courseId)
 
         assertNotNull(courseEntity)
         assertEquals(dummyCourse.courseId, courseEntity?.courseId)
@@ -39,10 +41,17 @@ class DetailCourseViewModelTest {
 
     @Test
     fun getModules() {
-        viewModel.setCourseId(dummyCourse.courseId)
-        val moduleEntity: List<ModuleEntity> = viewModel.getModules()
+        `when`(academyRepository.getAllModulesByCourse(courseId)).thenReturn(
+            FakeDataDummyTest.generateDummyModules(
+                courseId
+            )
+        )
+
+        val moduleEntity: List<ModuleEntity>? = viewModel.getModules()
+
+        verify(academyRepository).getAllModulesByCourse(courseId)
 
         assertNotNull(moduleEntity)
-        assertEquals(7, moduleEntity.size)
+        assertEquals(7, moduleEntity?.size)
     }
 }
