@@ -2,7 +2,9 @@ package com.edsusantoo.bismillah.academy.ui.detail
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,14 +47,22 @@ class DetailCourseActivity : AppCompatActivity() {
         if (extras != null) {
             val courseId: String? = extras.getString(EXTRA_COURSE)
             if (courseId != null) {
+                progress_bar.visibility = View.VISIBLE
                 viewModel.setCourseId(courseId)
-                adapter.setModules(viewModel.getModules())
             }
         }
 
-        if (viewModel.getCourse() != null) {
-            populateCourse(viewModel.getCourse())
-        }
+        viewModel.getModules()?.observe(this, Observer {
+            progress_bar.visibility = View.GONE
+            adapter.setModules(it)
+            adapter.notifyDataSetChanged()
+        })
+
+        viewModel.getCourse()?.observe(this, Observer {
+            if (it != null) {
+                populateCourse(it)
+            }
+        })
 
         rv_module.isNestedScrollingEnabled = false
         rv_module.layoutManager = LinearLayoutManager(this)
@@ -70,9 +80,9 @@ class DetailCourseActivity : AppCompatActivity() {
         text_date.text = String.format("Deadline %s", courseEntity?.deadline)
 
         Glide.with(applicationContext)
-                .load(courseEntity?.imagePath)
-                .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
-                .into(image_poster)
+            .load(courseEntity?.imagePath)
+            .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
+            .into(image_poster)
 
         btn_start.setOnClickListener {
             val intent = Intent(this@DetailCourseActivity, CourseReaderActivity::class.java)

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -52,7 +53,14 @@ class ModuleListFragment : Fragment(), ModuleListAdapter.MyAdapterClickListener 
         if (activity != null) {
             viewModel = obtainViewModel(activity!!)
             adapter = ModuleListAdapter(this)
-            populateRecyclerView(viewModel.getModules())
+            progress_bar.visibility = View.VISIBLE
+
+            viewModel.getModules()?.observe(this, Observer {
+                if (it != null) {
+                    progress_bar.visibility = View.VISIBLE
+                    populateRecyclerView(it)
+                }
+            })
         }
     }
 
