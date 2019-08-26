@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.edsusantoo.bismillah.academy.R
@@ -46,7 +47,12 @@ class BookmarkFragment : Fragment(), BookmarkFragmentCallback {
             viewModel = obtainViewModel(activity!!)
 
             val bookmarkAdapter = BookmarkAdapter(activity, this)
-            bookmarkAdapter.setListCourses(viewModel.getBookmark())
+            progress_bar.visibility = View.VISIBLE
+            viewModel.getBookmark()?.observe(this, Observer {
+                progress_bar.visibility = View.GONE
+                bookmarkAdapter.setListCourses(it)
+                bookmarkAdapter.notifyDataSetChanged()
+            })
 
             rv_bookmark.layoutManager = LinearLayoutManager(context)
             rv_bookmark.setHasFixedSize(true)

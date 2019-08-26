@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.edsusantoo.bismillah.academy.R
@@ -44,7 +45,13 @@ class AcademyFragment : Fragment() {
             viewModel = obtainViewModel(activity!!)
 
             val academyAdapter = AcademyAdapter(activity)
-            academyAdapter.setListCourses(viewModel.getCourse())
+            progress_bar.visibility = View.VISIBLE
+
+            viewModel.getCourse()?.observe(this, Observer {
+                progress_bar.visibility = View.GONE
+                academyAdapter.setListCourses(it)
+                academyAdapter.notifyDataSetChanged()
+            })
 
             rv_academy.layoutManager = LinearLayoutManager(context)
             rv_academy.setHasFixedSize(true)

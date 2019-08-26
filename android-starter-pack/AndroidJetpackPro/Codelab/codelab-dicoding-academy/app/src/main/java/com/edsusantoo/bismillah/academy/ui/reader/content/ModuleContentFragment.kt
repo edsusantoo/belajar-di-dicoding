@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.edsusantoo.bismillah.academy.R
 import com.edsusantoo.bismillah.academy.data.ModuleEntity
@@ -43,8 +44,16 @@ class ModuleContentFragment : Fragment() {
 
         if (activity != null) {
 
+            progress_bar.visibility = View.VISIBLE
+
             viewModel = obtainViewModel(activity!!)
-            populateWebView(viewModel.getSelectedModule())
+
+            viewModel.getSelectedModule()?.observe(this, Observer {
+                if (it != null) {
+                    progress_bar.visibility = View.GONE
+                    populateWebView(it)
+                }
+            })
         }
     }
 
