@@ -1,31 +1,56 @@
 package com.edsusantoo.bismillah.academy.ui.bookmark
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.edsusantoo.bismillah.academy.data.CourseEntity
 import com.edsusantoo.bismillah.academy.data.source.AcademyRepository
 import com.edsusantoo.bismillah.academy.utils.FakeDataDummyTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
+import org.mockito.Mock
+import org.mockito.Mockito.*
+import org.mockito.MockitoAnnotations
+
 
 class BookmarkViewModelTest {
+
+
+    @get:Rule
+    val instantTaskExecutorRule: InstantTaskExecutorRule = InstantTaskExecutorRule()
+
     private lateinit var viewModel: BookmarkViewModel
     private var academyRepository: AcademyRepository = mock(AcademyRepository::class.java)
 
+
+    @Mock
+    lateinit var observeGetCourse: Observer<List<CourseEntity>>
+
+
     @Before
     fun setup() {
+
+        MockitoAnnotations.initMocks(this)
+
         viewModel = BookmarkViewModel(academyRepository)
+
+        viewModel.getBookmark()?.observeForever(observeGetCourse)
     }
 
     @Test
     fun getBookmark() {
-        `when`(academyRepository.getBookmarkedCourses()).thenReturn(FakeDataDummyTest.generateDummyCourses())
 
-        val courseEntities: List<CourseEntity>? = viewModel.getBookmark()
+        val dummyCourses = FakeDataDummyTest.generateDummyCourses()
 
-        assertNotNull(courseEntities)
-        assertEquals(5, courseEntities?.size)
+        val courses = MutableLiveData<List<CourseEntity>>()
+        courses.value = dummyCourses
+
+        `when`(academyRepository.getBookmarkedCourses()).thenReturn(courses)
+
+
+        verify(observeGetCourse).onChanged(dummyCourses)
+
+
     }
 }

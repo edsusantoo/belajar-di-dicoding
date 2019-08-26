@@ -6,8 +6,11 @@ import com.edsusantoo.bismillah.academy.data.source.remote.response.ContentRespo
 import com.edsusantoo.bismillah.academy.data.source.remote.response.CourseResponse
 import com.edsusantoo.bismillah.academy.data.source.remote.response.ModuleResponse
 import com.edsusantoo.bismillah.academy.utils.FakeDataDummyTest
+import com.edsusantoo.bismillah.academy.utils.LiveDataTestUtil
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.*
@@ -27,51 +30,117 @@ class AcademyRepositoryTest {
     private val moduleId: String = moduleResponse[0].moduleId
     private val content: ContentResponse = FakeDataDummyTest.generateRemoteDummyContent(moduleId)
 
+    @Before
+    fun setup() {
+
+    }
+
+    @After
+    fun tearDown() {
+
+    }
+
     @Test
     fun getAllCourse() {
-        `when`(remote.getAllCourses()).thenReturn(courseResponse)
-        val courseEntity = academyRepository.getAllCourses()
-        verify(remote).getAllCourses()
-        assertNotNull(courseEntity)
-        assertEquals(courseResponse.size, courseEntity.size)
+        doAnswer {
+            (it.arguments[0] as RemoteRepository.LoadCoursesCallback)
+                .onAllCoursesReceived(courseResponse)
+
+            return@doAnswer null
+        }.`when`(remote).getAllCourses(any(RemoteRepository.LoadCoursesCallback::class.java))
+
+        val result = LiveDataTestUtil.getValue(academyRepository.getAllCourses())
+
+        verify(remote, times(1)).getAllCourses(any(RemoteRepository.LoadCoursesCallback::class.java))
+
+        assertNotNull(result)
+        assertEquals(courseResponse.size, result.size)
     }
 
     @Test
     fun getAllModuleByCourse() {
-        `when`(remote.getModules(courseId)).thenReturn(moduleResponse)
-        val moduleEntity = academyRepository.getAllModulesByCourse(courseId)
-        verify(remote).getModules(courseId)
-        assertNotNull(moduleEntity)
-        assertEquals(moduleResponse.size, moduleEntity.size)
+        doAnswer {
+            (it.arguments[0] as RemoteRepository.LoadModulesCallback)
+                .onAllModulesReceived(moduleResponse)
+
+            return@doAnswer null
+        }.`when`(remote).getModules(eq(courseId), any(RemoteRepository.LoadModulesCallback::class.java))
+
+        val result = LiveDataTestUtil.getValue(academyRepository.getAllModulesByCourse(courseId))
+
+        verify(remote, times(1)).getModules(eq(courseId), any(RemoteRepository.LoadModulesCallback::class.java))
+
+        assertNotNull(result)
+        assertEquals(moduleResponse.size, result.size)
+
+
     }
 
     @Test
     fun getBookmarkedCourses() {
-        `when`(remote.getAllCourses()).thenReturn(courseResponse)
-        val courseEntities = academyRepository.getBookmarkedCourses()
-        verify(remote).getAllCourses()
-        assertNotNull(courseEntities)
-        assertEquals(courseResponse.size, courseEntities.size)
+        doAnswer {
+            (it.arguments[0] as RemoteRepository.LoadCoursesCallback)
+                .onAllCoursesReceived(courseResponse)
+
+            return@doAnswer null
+        }.`when`(remote).getAllCourses(any(RemoteRepository.LoadCoursesCallback::class.java))
+
+        val result = LiveDataTestUtil.getValue(academyRepository.getBookmarkedCourses())
+
+        verify(remote, times(1)).getAllCourses(any(RemoteRepository.LoadCoursesCallback::class.java))
+
+        assertNotNull(result)
+        assertEquals(courseResponse.size, result.size)
+
     }
 
     @Test
     fun getContent() {
-        `when`(remote.getModules(courseId)).thenReturn(moduleResponse)
-        `when`(remote.getContent(moduleId)).thenReturn(content)
-        val resultModule = academyRepository.getContent(courseId, moduleId)
-        verify(remote).getContent(moduleId)
-        assertNotNull(resultModule)
-        assertEquals(content.content, resultModule?.contentEntity?.mContent)
+        doAnswer {
+            (it.arguments[0] as RemoteRepository.LoadModulesCallback)
+                .onAllModulesReceived(moduleResponse)
+
+            return@doAnswer null
+        }.`when`(remote).getModules(eq(courseId), any(RemoteRepository.LoadModulesCallback::class.java))
+
+        doAnswer {
+            (it.arguments[0] as RemoteRepository.GetContentCallback)
+                .onContentReceived(content)
+            return@doAnswer null
+        }.`when`(remote).getContent(eq(courseId), any(RemoteRepository.GetContentCallback::class.java))
+
+        val resultContent = LiveDataTestUtil.getValue(academyRepository.getContent(courseId, moduleId))
+
+        verify(remote, times(1))
+            .getModules(eq(courseId), any(RemoteRepository.LoadModulesCallback::class.java))
+
+        verify(remote, times(1))
+            .getContent(eq(moduleId), any(RemoteRepository.GetContentCallback::class.java))
+
+        assertNotNull(resultContent)
+        assertNotNull(resultContent?.contentEntity)
+        assertNotNull(resultContent?.contentEntity?.mContent)
+        assertEquals(content.content, resultContent?.contentEntity?.mContent)
+
     }
 
 
     @Test
     fun getCourseWithModules() {
-        `when`(remote.getAllCourses()).thenReturn(courseResponse)
-        val resultCourse = academyRepository.getCourseWithModules(courseId)
-        verify(remote).getAllCourses()
-        assertNotNull(resultCourse)
-        assertEquals(courseResponse[0].title, resultCourse?.title)
+        doAnswer {
+            (it.arguments[0] as RemoteRepository.LoadCoursesCallback)
+                .onAllCoursesReceived(courseResponse)
+
+            return@doAnswer null
+        }.`when`(remote).getAllCourses(any(RemoteRepository.LoadCoursesCallback::class.java))
+
+        val result = LiveDataTestUtil.getValue(academyRepository.getCourseWithModules(courseId))
+
+        verify(remote, times(1)).getAllCourses(any(RemoteRepository.LoadCoursesCallback::class.java))
+
+        assertNotNull(result)
+        assertNotNull(result?.title)
+        assertEquals(courseResponse[0].title, result?.title)
     }
 
 }

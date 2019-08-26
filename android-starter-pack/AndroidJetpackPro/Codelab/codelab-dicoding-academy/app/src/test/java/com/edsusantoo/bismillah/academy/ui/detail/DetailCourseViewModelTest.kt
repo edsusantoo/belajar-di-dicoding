@@ -1,57 +1,76 @@
 package com.edsusantoo.bismillah.academy.ui.detail
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.edsusantoo.bismillah.academy.data.CourseEntity
 import com.edsusantoo.bismillah.academy.data.ModuleEntity
 import com.edsusantoo.bismillah.academy.data.source.AcademyRepository
 import com.edsusantoo.bismillah.academy.utils.FakeDataDummyTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
 import org.mockito.Mockito.*
+import org.mockito.MockitoAnnotations
+
 
 class DetailCourseViewModelTest {
+
+
+    @get:Rule
+    val instantTaskExecutorRule: InstantTaskExecutorRule = InstantTaskExecutorRule()
+
     private lateinit var viewModel: DetailCourseViewModel
     private var dummyCourse: CourseEntity = FakeDataDummyTest.generateDummyCourses()[0]
     private var courseId: String = dummyCourse.courseId
+    private val dummyModules = FakeDataDummyTest.generateDummyModules(courseId)
 
     private var academyRepository: AcademyRepository = mock(AcademyRepository::class.java)
 
+
+    @Mock
+    lateinit var observeGetCourseEntity: Observer<CourseEntity?>
+
+    @Mock
+    lateinit var observeGetModuleEntity: Observer<List<ModuleEntity>>
+
     @Before
     fun setup() {
+
+        MockitoAnnotations.initMocks(this)
+
         viewModel = DetailCourseViewModel(academyRepository)
         viewModel.setCourseId(courseId)
 
+
+        viewModel.getCourse()?.observeForever(observeGetCourseEntity)
+        viewModel.getModules()?.observeForever(observeGetModuleEntity)
+
     }
+
 
     @Test
     fun getCourse() {
-        `when`(academyRepository.getCourseWithModules(courseId)).thenReturn(dummyCourse)
+        val courseEntities = MutableLiveData<CourseEntity>()
+        courseEntities.value = dummyCourse
 
-        val courseEntity: CourseEntity? = viewModel.getCourse()
-        verify(academyRepository).getCourseWithModules(courseId)
+        `when`(academyRepository.getCourseWithModules(courseId)).thenReturn(courseEntities)
 
-        assertNotNull(courseEntity)
-        assertEquals(dummyCourse.courseId, courseEntity?.courseId)
-        assertEquals(dummyCourse.deadline, courseEntity?.deadline)
-        assertEquals(dummyCourse.description, courseEntity?.description)
-        assertEquals(dummyCourse.imagePath, courseEntity?.imagePath)
-        assertEquals(dummyCourse.title, courseEntity?.title)
+        verify(observeGetCourseEntity).onChanged(dummyCourse)
+
     }
+
 
     @Test
     fun getModules() {
-        `when`(academyRepository.getAllModulesByCourse(courseId)).thenReturn(
-            FakeDataDummyTest.generateDummyModules(
-                courseId
-            )
-        )
 
-        val moduleEntity: List<ModuleEntity>? = viewModel.getModules()
+        val moduleEntities = MutableLiveData<List<ModuleEntity>>()
+        moduleEntities.value = dummyModules
 
-        verify(academyRepository).getAllModulesByCourse(courseId)
+        `when`(academyRepository.getAllModulesByCourse(courseId)).thenReturn(moduleEntities)
 
-        assertNotNull(moduleEntity)
-        assertEquals(7, moduleEntity?.size)
+        verify(observeGetModuleEntity).onChanged(dummyModules)
+
     }
 }
