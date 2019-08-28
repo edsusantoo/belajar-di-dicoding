@@ -9,11 +9,14 @@ import com.edsusantoo.bismillah.academy.utils.FakeDataDummyTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 
 
+@RunWith(JUnit4::class)
 class AcademyViewModelTest {
 
     @get:Rule
@@ -30,7 +33,6 @@ class AcademyViewModelTest {
     fun setup() {
         MockitoAnnotations.initMocks(this)
         viewModel = AcademyViewModel(academyRepository)
-        viewModel.getCourse()?.observeForever(observeGetCourse)
     }
 
 
@@ -43,6 +45,8 @@ class AcademyViewModelTest {
         courses.value = dummyCourse
 
         `when`(academyRepository.getAllCourses()).thenReturn(courses)
+
+        viewModel.getCourse()?.observeForever(observeGetCourse)
 
         verify(observeGetCourse).onChanged(dummyCourse)
     }

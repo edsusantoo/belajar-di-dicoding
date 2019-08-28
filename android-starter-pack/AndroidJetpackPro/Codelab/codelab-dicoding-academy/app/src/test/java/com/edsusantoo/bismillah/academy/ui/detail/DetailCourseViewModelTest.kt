@@ -44,8 +44,6 @@ class DetailCourseViewModelTest {
         viewModel.setCourseId(courseId)
 
 
-        viewModel.getCourse()?.observeForever(observeGetCourseEntity)
-        viewModel.getModules()?.observeForever(observeGetModuleEntity)
 
     }
 
@@ -56,6 +54,8 @@ class DetailCourseViewModelTest {
         courseEntities.value = dummyCourse
 
         `when`(academyRepository.getCourseWithModules(courseId)).thenReturn(courseEntities)
+
+        viewModel.getCourse()?.observeForever(observeGetCourseEntity)
 
         verify(observeGetCourseEntity).onChanged(dummyCourse)
 
@@ -69,6 +69,8 @@ class DetailCourseViewModelTest {
         moduleEntities.value = dummyModules
 
         `when`(academyRepository.getAllModulesByCourse(courseId)).thenReturn(moduleEntities)
+
+        viewModel.getModules()?.observeForever(observeGetModuleEntity)
 
         verify(observeGetModuleEntity).onChanged(dummyModules)
 

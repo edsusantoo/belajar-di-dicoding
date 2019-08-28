@@ -38,15 +38,9 @@ class CourseReaderViewModelTest {
 
     @Before
     fun setup() {
-
         MockitoAnnotations.initMocks(this)
-
         viewModel = CourseReaderViewModel(academyRepository)
         viewModel.setCourseId(courseId)
-
-
-
-        viewModel.getModules()?.observeForever(observeGetModuleEntityList)
 
     }
 
@@ -59,10 +53,9 @@ class CourseReaderViewModelTest {
 
         `when`(academyRepository.getAllModulesByCourse(courseId)).thenReturn(moduleEntities)
 
+        viewModel.getModules()?.observeForever(observeGetModuleEntityList)
+
         verify(observeGetModuleEntityList).onChanged(dummyModules)
-        viewModel.getSelectedModule()?.observeForever(observeGetModuleEntity)
-
-
     }
 
 
@@ -83,8 +76,9 @@ class CourseReaderViewModelTest {
 
         `when`(academyRepository.getContent(courseId, moduleId)).thenReturn(moduleEntity)
 
-
         viewModel.setSelectedModule(moduleId)
+
+        viewModel.getSelectedModule()?.observeForever(observeGetModuleEntity)
 
         verify(observeGetModuleEntity).onChanged(dummyModule)
 

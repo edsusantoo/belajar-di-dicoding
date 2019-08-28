@@ -25,6 +25,12 @@ class BookmarkFragmentTest {
 
     @Test
     fun loadBookmarks() {
+        try {
+            Thread.sleep(3000)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+
         onView(withId(R.id.rv_bookmark)).check(matches(isDisplayed()))
         onView(withId(R.id.rv_bookmark)).check(RecyclerViewItemCountAssertion(5))
     }

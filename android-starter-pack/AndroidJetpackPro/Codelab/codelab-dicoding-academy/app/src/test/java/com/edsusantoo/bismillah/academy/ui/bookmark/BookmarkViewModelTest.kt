@@ -35,7 +35,6 @@ class BookmarkViewModelTest {
 
         viewModel = BookmarkViewModel(academyRepository)
 
-        viewModel.getBookmark()?.observeForever(observeGetCourse)
     }
 
     @Test
@@ -48,6 +47,7 @@ class BookmarkViewModelTest {
 
         `when`(academyRepository.getBookmarkedCourses()).thenReturn(courses)
 
+        viewModel.getBookmark()?.observeForever(observeGetCourse)
 
         verify(observeGetCourse).onChanged(dummyCourses)
 

@@ -30,6 +30,12 @@ class DetailCourseActivityTest {
 
     @Test
     fun loadCourse() {
+        try {
+            Thread.sleep(3000)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+
         onView(withId(R.id.text_title)).check(matches(isDisplayed()))
         onView(withId(R.id.text_title)).check(matches(withText(dummyCourse.title)))
         onView(withId(R.id.text_date)).check(matches(isDisplayed()))
@@ -38,6 +44,12 @@ class DetailCourseActivityTest {
 
     @Test
     fun loadModules() {
+        try {
+            Thread.sleep(3000)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+
         onView(withId(R.id.rv_module)).check(matches(isDisplayed()))
         onView(withId(R.id.rv_module)).check(RecyclerViewItemCountAssertion(7))
     }

@@ -13,18 +13,19 @@ import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito
 import org.mockito.Mockito.*
+import org.mockito.MockitoAnnotations
 
 
 class AcademyRepositoryTest {
-
     @get:Rule
     val instantTaskExecutorRule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
     private val remote: RemoteRepository = mock(RemoteRepository::class.java)
     private val academyRepository: FakeAcademyRepository = FakeAcademyRepository(remote)
 
-    private val courseResponse: List<CourseResponse> = FakeDataDummyTest.generateRemoteDummyCourses()
+    private val courseResponse: ArrayList<CourseResponse> = FakeDataDummyTest.generateRemoteDummyCourses()
     private val courseId: String = courseResponse[0].id
     private val moduleResponse: ArrayList<ModuleResponse> = FakeDataDummyTest.generateRemoteDummyModules(courseId)
     private val moduleId: String = moduleResponse[0].moduleId
@@ -33,6 +34,7 @@ class AcademyRepositoryTest {
     @Before
     fun setup() {
 
+        MockitoAnnotations.initMocks(this)
     }
 
     @After
@@ -47,11 +49,11 @@ class AcademyRepositoryTest {
                 .onAllCoursesReceived(courseResponse)
 
             return@doAnswer null
-        }.`when`(remote).getAllCourses(any(RemoteRepository.LoadCoursesCallback::class.java))
+        }.`when`(remote).getAllCourses(any())
 
         val result = LiveDataTestUtil.getValue(academyRepository.getAllCourses())
 
-        verify(remote, times(1)).getAllCourses(any(RemoteRepository.LoadCoursesCallback::class.java))
+        verify(remote, times(1)).getAllCourses(any())
 
         assertNotNull(result)
         assertEquals(courseResponse.size, result.size)
@@ -60,15 +62,15 @@ class AcademyRepositoryTest {
     @Test
     fun getAllModuleByCourse() {
         doAnswer {
-            (it.arguments[0] as RemoteRepository.LoadModulesCallback)
+            (it.arguments[1] as RemoteRepository.LoadModulesCallback)
                 .onAllModulesReceived(moduleResponse)
 
             return@doAnswer null
-        }.`when`(remote).getModules(eq(courseId), any(RemoteRepository.LoadModulesCallback::class.java))
+        }.`when`(remote).getModules(eq(courseId), any())
 
         val result = LiveDataTestUtil.getValue(academyRepository.getAllModulesByCourse(courseId))
 
-        verify(remote, times(1)).getModules(eq(courseId), any(RemoteRepository.LoadModulesCallback::class.java))
+        verify(remote, times(1)).getModules(eq(courseId), any())
 
         assertNotNull(result)
         assertEquals(moduleResponse.size, result.size)
@@ -83,11 +85,11 @@ class AcademyRepositoryTest {
                 .onAllCoursesReceived(courseResponse)
 
             return@doAnswer null
-        }.`when`(remote).getAllCourses(any(RemoteRepository.LoadCoursesCallback::class.java))
+        }.`when`(remote).getAllCourses(any())
 
         val result = LiveDataTestUtil.getValue(academyRepository.getBookmarkedCourses())
 
-        verify(remote, times(1)).getAllCourses(any(RemoteRepository.LoadCoursesCallback::class.java))
+        verify(remote, times(1)).getAllCourses(any())
 
         assertNotNull(result)
         assertEquals(courseResponse.size, result.size)
@@ -97,25 +99,25 @@ class AcademyRepositoryTest {
     @Test
     fun getContent() {
         doAnswer {
-            (it.arguments[0] as RemoteRepository.LoadModulesCallback)
+            (it.arguments[1] as RemoteRepository.LoadModulesCallback)
                 .onAllModulesReceived(moduleResponse)
 
             return@doAnswer null
-        }.`when`(remote).getModules(eq(courseId), any(RemoteRepository.LoadModulesCallback::class.java))
+        }.`when`(remote).getModules(eq(courseId), any())
 
         doAnswer {
-            (it.arguments[0] as RemoteRepository.GetContentCallback)
+            (it.arguments[1] as RemoteRepository.GetContentCallback)
                 .onContentReceived(content)
             return@doAnswer null
-        }.`when`(remote).getContent(eq(courseId), any(RemoteRepository.GetContentCallback::class.java))
+        }.`when`(remote).getContent(eq(moduleId), any())
 
         val resultContent = LiveDataTestUtil.getValue(academyRepository.getContent(courseId, moduleId))
 
         verify(remote, times(1))
-            .getModules(eq(courseId), any(RemoteRepository.LoadModulesCallback::class.java))
+            .getModules(eq(courseId), any())
 
         verify(remote, times(1))
-            .getContent(eq(moduleId), any(RemoteRepository.GetContentCallback::class.java))
+            .getContent(eq(moduleId), any())
 
         assertNotNull(resultContent)
         assertNotNull(resultContent?.contentEntity)
@@ -132,15 +134,26 @@ class AcademyRepositoryTest {
                 .onAllCoursesReceived(courseResponse)
 
             return@doAnswer null
-        }.`when`(remote).getAllCourses(any(RemoteRepository.LoadCoursesCallback::class.java))
+        }.`when`(remote).getAllCourses(any())
 
         val result = LiveDataTestUtil.getValue(academyRepository.getCourseWithModules(courseId))
 
-        verify(remote, times(1)).getAllCourses(any(RemoteRepository.LoadCoursesCallback::class.java))
+        verify(remote, times(1)).getAllCourses(any())
 
         assertNotNull(result)
         assertNotNull(result?.title)
         assertEquals(courseResponse[0].title, result?.title)
     }
+
+    /**
+     * halper to null interface
+     */
+    private fun <T> any(): T {
+        Mockito.any<T>()
+        return uninitialized()
+    }
+
+    private fun <T> uninitialized(): T = null as T
+
 
 }

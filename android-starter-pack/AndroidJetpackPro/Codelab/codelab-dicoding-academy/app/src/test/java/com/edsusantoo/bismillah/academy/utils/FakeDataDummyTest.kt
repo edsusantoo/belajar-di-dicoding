@@ -257,7 +257,7 @@ class FakeDataDummyTest {
                     String.format("%sm6", courseId),
                     courseId,
                     "Latihan 2",
-                    4
+                    5
                 )
             )
 
@@ -266,7 +266,7 @@ class FakeDataDummyTest {
                     String.format("%sm7", courseId),
                     courseId,
                     "Bedah Kode 2",
-                    4
+                    6
                 )
             )
 

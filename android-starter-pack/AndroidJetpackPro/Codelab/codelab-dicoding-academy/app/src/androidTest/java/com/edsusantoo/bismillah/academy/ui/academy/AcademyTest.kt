@@ -13,12 +13,20 @@ import org.junit.Rule
 import org.junit.Test
 
 
+
+
 class AcademyTest {
     @get:Rule
     var activityRule = ActivityTestRule(HomeActivity::class.java)
 
     @Test
     fun toDetailActivityTest() {
+        try {
+            Thread.sleep(3000)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+
         onView(withId(R.id.rv_academy)).check(matches(isDisplayed()))
         onView(withId(R.id.rv_academy)).perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
@@ -32,6 +40,12 @@ class AcademyTest {
 
     @Test
     fun toReaderActivityTest() {
+        try {
+            Thread.sleep(3000)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+
         onView(withId(R.id.rv_academy)).check(matches(isDisplayed()))
         onView(withId(R.id.rv_academy)).perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(

@@ -25,6 +25,12 @@ class AcademyAdapterTest {
 
     @Test
     fun loadCourse() {
+        try {
+            Thread.sleep(3000)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+
         onView(withId(R.id.rv_academy)).check(matches(isDisplayed()))
         onView(withId(R.id.rv_academy)).check(RecyclerViewItemCountAssertion(5))
     }
