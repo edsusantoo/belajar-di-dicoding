@@ -15,7 +15,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.*
-import org.mockito.MockitoAnnotations
 
 
 class AcademyRepositoryTest {
@@ -33,8 +32,7 @@ class AcademyRepositoryTest {
 
     @Before
     fun setup() {
-
-        MockitoAnnotations.initMocks(this)
+        // MockitoAnnotations.initMocks(this)
     }
 
     @After
@@ -96,6 +94,7 @@ class AcademyRepositoryTest {
 
     }
 
+    //TODO:Masih error di moduleid yang null
     @Test
     fun getContent() {
         doAnswer {

@@ -13,8 +13,7 @@ import org.junit.Rule
 import org.junit.Test
 
 
-
-
+//TODO:Masih error: nggak tau nih
 class AcademyTest {
     @get:Rule
     var activityRule = ActivityTestRule(HomeActivity::class.java)
