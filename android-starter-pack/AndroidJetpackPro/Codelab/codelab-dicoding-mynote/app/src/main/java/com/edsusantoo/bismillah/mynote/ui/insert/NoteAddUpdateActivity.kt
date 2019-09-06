@@ -84,19 +84,17 @@ class NoteAddUpdateActivity : AppCompatActivity() {
                 title.isEmpty() -> edt_title.error = getString(R.string.empty)
                 desciption.isEmpty() -> edt_description.error = getString(R.string.empty)
                 else -> {
-                    note?.title = title
-                    note?.description = desciption
-
                     val intent = Intent()
                     intent.putExtra(EXTRA_NOTE, note)
                     intent.putExtra(EXTRA_POSITION, position)
-
                     if (isEdit) {
-                        noteAddUpdateViewModel.update(note)
+                        val mNote = Note(title, desciption, DateHelper.getCurrentDate())
+                        noteAddUpdateViewModel.update(mNote)
                         setResult(RESLUT_UPDATE, intent)
+                        finish()
                     } else {
-                        note?.date = DateHelper.getCurrentDate()
-                        noteAddUpdateViewModel.insert(note)
+                        val mNote = Note(title, desciption, DateHelper.getCurrentDate())
+                        noteAddUpdateViewModel.insert(mNote)
                         setResult(RESULT_ADD, intent)
                         finish()
                     }
