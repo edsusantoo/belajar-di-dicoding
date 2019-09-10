@@ -1,28 +1,48 @@
 package com.edsusantoo.bismillah.academy.ui.detail
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.edsusantoo.bismillah.academy.data.CourseEntity
-import com.edsusantoo.bismillah.academy.data.ModuleEntity
 import com.edsusantoo.bismillah.academy.data.source.AcademyRepository
+import com.edsusantoo.bismillah.academy.data.source.local.entity.CourseEntity
+import com.edsusantoo.bismillah.academy.data.source.local.entity.CourseWithModule
+import com.edsusantoo.bismillah.academy.data.source.vo.Resource
 
 
 class DetailCourseViewModel(private val academyRepository: AcademyRepository?) : ViewModel() {
-    private var courseId: String? = null
+    private val mCourseEntity: CourseEntity? = null
 
-    fun getCourse(): LiveData<CourseEntity?>? {
-        return academyRepository?.getCourseWithModules(courseId)
+    private val courseId = MutableLiveData<String>()
+
+    val courseModule: LiveData<Resource<CourseWithModule>> = Transformations.switchMap(courseId) {
+        academyRepository?.getCourseWithModules(it)
     }
 
-    fun getModules(): LiveData<List<ModuleEntity>>? {
-        return academyRepository?.getAllModulesByCourse(courseId)
+    fun setCourseId(mCourseId: String) {
+        this.courseId.value = mCourseId
     }
 
-    fun setCourseId(courseId: String) {
-        this.courseId = courseId
+    fun getCourseId(): String? {
+        if (courseId.value == null) return null
+
+        return courseId.value
     }
 
-    fun getCourseId(): String {
-        return courseId!!
+    fun setBookmark() {
+        if (courseModule.value != null) {
+            val courseWithModule = courseModule.value?.data
+
+            if (courseWithModule != null) {
+                val courseEntity = courseWithModule.mCourse
+
+                // Kode di bawah menggunakan tanda seru (!),
+                // karena akan mengganti status dari apakah sudah di bookmark atau tidak menjadi apakah sudah siap dibookmark atau tidak
+
+                val newState = courseEntity?.bookmarked?.not()
+                academyRepository?.setCourseBookmark(courseEntity, newState!!)
+
+            }
+        }
     }
 }

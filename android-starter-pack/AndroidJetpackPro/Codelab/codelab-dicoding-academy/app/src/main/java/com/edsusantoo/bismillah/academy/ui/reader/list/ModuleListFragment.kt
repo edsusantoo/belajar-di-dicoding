@@ -3,9 +3,11 @@ package com.edsusantoo.bismillah.academy.ui.reader.list
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
@@ -13,7 +15,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.edsusantoo.bismillah.academy.R
-import com.edsusantoo.bismillah.academy.data.ModuleEntity
+import com.edsusantoo.bismillah.academy.data.source.local.entity.ModuleEntity
+import com.edsusantoo.bismillah.academy.data.source.vo.Status
 import com.edsusantoo.bismillah.academy.ui.reader.CourseReaderActivity
 import com.edsusantoo.bismillah.academy.ui.reader.CourseReaderCallback
 import com.edsusantoo.bismillah.academy.ui.reader.CourseReaderViewModel
@@ -53,12 +56,19 @@ class ModuleListFragment : Fragment(), ModuleListAdapter.MyAdapterClickListener 
         if (activity != null) {
             viewModel = obtainViewModel(activity!!)
             adapter = ModuleListAdapter(this)
-            progress_bar.visibility = View.VISIBLE
-
-            viewModel.getModules()?.observe(this, Observer {
-                if (it != null) {
-                    progress_bar.visibility = View.VISIBLE
-                    populateRecyclerView(it)
+            viewModel.modules.observe(this, Observer { moduleEntities ->
+                if (moduleEntities != null) {
+                    when (moduleEntities.status) {
+                        Status.LOADING -> progress_bar.visibility = View.VISIBLE
+                        Status.SUCCESS -> {
+                            progress_bar.visibility = View.GONE
+                            populateRecyclerView(moduleEntities.data)
+                        }
+                        else -> {
+                            progress_bar.visibility = View.GONE
+                            Toast.makeText(context, "Terjadi kesalahan", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
             })
         }
@@ -75,6 +85,8 @@ class ModuleListFragment : Fragment(), ModuleListAdapter.MyAdapterClickListener 
     }
 
     private fun populateRecyclerView(modules: List<ModuleEntity>?) {
+
+        Log.d("TESTETST", "a" + adapter.itemCount.toString())
         progress_bar.visibility = View.GONE
         adapter.setModules(modules)
         rv_module.layoutManager = LinearLayoutManager(context)
