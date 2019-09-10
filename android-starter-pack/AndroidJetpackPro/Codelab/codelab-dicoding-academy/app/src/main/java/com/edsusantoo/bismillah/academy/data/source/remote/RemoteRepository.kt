@@ -1,12 +1,13 @@
 package com.edsusantoo.bismillah.academy.data.source.remote
 
 import android.os.Handler
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.edsusantoo.bismillah.academy.data.source.remote.response.ContentResponse
 import com.edsusantoo.bismillah.academy.data.source.remote.response.CourseResponse
 import com.edsusantoo.bismillah.academy.data.source.remote.response.ModuleResponse
 import com.edsusantoo.bismillah.academy.utils.EspressoIdlingResource
 import com.edsusantoo.bismillah.academy.utils.JsonHelper
-
 
 class RemoteRepository(private val jsonHelper: JsonHelper) {
 
@@ -24,34 +25,51 @@ class RemoteRepository(private val jsonHelper: JsonHelper) {
 
     }
 
-    fun getAllCourses(callback: LoadCoursesCallback) {
+    fun getAllCoursesAsLiveData(): LiveData<ApiResponse<List<CourseResponse>>> {
         EspressoIdlingResource.increment()
+        val resultCourse = MutableLiveData<ApiResponse<List<CourseResponse>>>()
+
         val handler = Handler()
         handler.postDelayed({
-            callback.onAllCoursesReceived(jsonHelper.loadCourses())
-            EspressoIdlingResource.decrement()
-        }, SERVICE_LATENCY_IN_MILLIS)
-    }
-
-    fun getModules(courseId: String?, callback: LoadModulesCallback) {
-        EspressoIdlingResource.increment()
-        val handler = Handler()
-        handler.postDelayed(
-            {
-                callback.onAllModulesReceived(jsonHelper.loadModule(courseId))
+            resultCourse.value = ApiResponse.success(jsonHelper.loadCourses())
+            if (!EspressoIdlingResource.getEspressoIdlingResource().isIdleNow) {
                 EspressoIdlingResource.decrement()
-            },
-            SERVICE_LATENCY_IN_MILLIS
-        )
+            }
+        }, SERVICE_LATENCY_IN_MILLIS)
+
+        return resultCourse
     }
 
-    fun getContent(moduleId: String, callback: GetContentCallback) {
+    fun getAllModulesByCourseAsLiveData(courseId: String): LiveData<ApiResponse<List<ModuleResponse>>> {
+
         EspressoIdlingResource.increment()
+
+        val resultModules = MutableLiveData<ApiResponse<List<ModuleResponse>>>()
+
         val handler = Handler()
         handler.postDelayed({
-            callback.onContentReceived(jsonHelper.loadContent(moduleId))
-            EspressoIdlingResource.decrement()
+            resultModules.value = ApiResponse.success(jsonHelper.loadModule(courseId))
+            if (!EspressoIdlingResource.getEspressoIdlingResource().isIdleNow) {
+                EspressoIdlingResource.decrement()
+            }
         }, SERVICE_LATENCY_IN_MILLIS)
+
+        return resultModules
+    }
+
+    fun getContentAsLiveData(moduleId: String): LiveData<ApiResponse<ContentResponse>> {
+        EspressoIdlingResource.increment()
+        val resultContent = MutableLiveData<ApiResponse<ContentResponse>>()
+
+        val handler = Handler()
+        handler.postDelayed({
+            resultContent.value = ApiResponse.success(jsonHelper.loadContent(moduleId))
+            if (!EspressoIdlingResource.getEspressoIdlingResource().isIdleNow) {
+                EspressoIdlingResource.decrement()
+            }
+        }, SERVICE_LATENCY_IN_MILLIS)
+
+        return resultContent
     }
 
     interface LoadCoursesCallback {

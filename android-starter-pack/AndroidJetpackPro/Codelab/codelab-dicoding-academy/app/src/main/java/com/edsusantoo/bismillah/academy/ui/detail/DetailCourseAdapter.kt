@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.edsusantoo.bismillah.academy.R
-import com.edsusantoo.bismillah.academy.data.ModuleEntity
+import com.edsusantoo.bismillah.academy.data.source.local.entity.ModuleEntity
 import kotlinx.android.synthetic.main.items_module_list.view.*
 
 class DetailCourseAdapter : RecyclerView.Adapter<DetailCourseAdapter.DetailCourseViewHolder>() {
@@ -35,7 +35,7 @@ class DetailCourseAdapter : RecyclerView.Adapter<DetailCourseAdapter.DetailCours
     }
 
     override fun onBindViewHolder(holder: DetailCourseViewHolder, position: Int) {
-        holder.bind(mModules[position].mTitle)
+        holder.bind(mModules[position].title)
     }
 
     class DetailCourseViewHolder(view: View) : RecyclerView.ViewHolder(view) {

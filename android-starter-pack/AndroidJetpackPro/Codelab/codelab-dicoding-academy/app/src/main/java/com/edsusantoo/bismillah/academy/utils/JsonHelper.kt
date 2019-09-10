@@ -79,7 +79,7 @@ class JsonHelper(private val application: Application) {
         return list
     }
 
-    fun loadContent(moduleId: String): ContentResponse? {
+    fun loadContent(moduleId: String): ContentResponse {
         val fileName = String.format("Content_%s.json", moduleId)
         var contentResponse: ContentResponse? = null
         try {
@@ -97,7 +97,7 @@ class JsonHelper(private val application: Application) {
             e.printStackTrace()
         }
 
-        return contentResponse
+        return contentResponse!!
     }
 
 }

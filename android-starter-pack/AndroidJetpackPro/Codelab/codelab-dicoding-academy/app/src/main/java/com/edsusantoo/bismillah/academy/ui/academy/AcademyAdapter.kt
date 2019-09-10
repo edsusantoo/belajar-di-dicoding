@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.edsusantoo.bismillah.academy.R
-import com.edsusantoo.bismillah.academy.data.CourseEntity
+import com.edsusantoo.bismillah.academy.data.source.local.entity.CourseEntity
 import com.edsusantoo.bismillah.academy.ui.detail.DetailCourseActivity
 import kotlinx.android.synthetic.main.items_academy.view.*
 
