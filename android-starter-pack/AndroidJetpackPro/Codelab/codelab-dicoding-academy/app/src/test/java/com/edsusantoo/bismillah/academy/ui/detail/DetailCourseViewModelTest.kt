@@ -3,9 +3,10 @@ package com.edsusantoo.bismillah.academy.ui.detail
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.edsusantoo.bismillah.academy.data.CourseEntity
-import com.edsusantoo.bismillah.academy.data.ModuleEntity
 import com.edsusantoo.bismillah.academy.data.source.AcademyRepository
+import com.edsusantoo.bismillah.academy.data.source.local.entity.CourseEntity
+import com.edsusantoo.bismillah.academy.data.source.local.entity.CourseWithModule
+import com.edsusantoo.bismillah.academy.data.source.vo.Resource
 import com.edsusantoo.bismillah.academy.utils.FakeDataDummyTest
 import org.junit.Before
 import org.junit.Rule
@@ -13,7 +14,6 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
-
 
 class DetailCourseViewModelTest {
 
@@ -30,10 +30,8 @@ class DetailCourseViewModelTest {
 
 
     @Mock
-    lateinit var observeGetCourseEntity: Observer<CourseEntity?>
+    lateinit var observeCourseWithModule: Observer<Resource<CourseWithModule>>
 
-    @Mock
-    lateinit var observeGetModuleEntity: Observer<List<ModuleEntity>>
 
     @Before
     fun setup() {
@@ -49,30 +47,15 @@ class DetailCourseViewModelTest {
 
 
     @Test
-    fun getCourse() {
-        val courseEntities = MutableLiveData<CourseEntity>()
-        courseEntities.value = dummyCourse
+    fun getCourseWithModule() {
+        val resource = Resource.success(FakeDataDummyTest.generateDummyCourseWithModules(dummyCourse, true))
+        val courseEntities = MutableLiveData<Resource<CourseWithModule>>()
+        courseEntities.setValue(resource)
 
         `when`(academyRepository.getCourseWithModules(courseId)).thenReturn(courseEntities)
 
-        viewModel.getCourse()?.observeForever(observeGetCourseEntity)
+        viewModel.courseModule.observeForever(observeCourseWithModule)
 
-        verify(observeGetCourseEntity).onChanged(dummyCourse)
-
-    }
-
-
-    @Test
-    fun getModules() {
-
-        val moduleEntities = MutableLiveData<List<ModuleEntity>>()
-        moduleEntities.value = dummyModules
-
-        `when`(academyRepository.getAllModulesByCourse(courseId)).thenReturn(moduleEntities)
-
-        viewModel.getModules()?.observeForever(observeGetModuleEntity)
-
-        verify(observeGetModuleEntity).onChanged(dummyModules)
-
+        verify(observeCourseWithModule).onChanged(resource)
     }
 }

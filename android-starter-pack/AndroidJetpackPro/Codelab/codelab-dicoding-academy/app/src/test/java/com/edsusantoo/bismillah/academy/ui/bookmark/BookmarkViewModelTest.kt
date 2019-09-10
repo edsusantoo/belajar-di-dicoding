@@ -3,8 +3,9 @@ package com.edsusantoo.bismillah.academy.ui.bookmark
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.edsusantoo.bismillah.academy.data.CourseEntity
 import com.edsusantoo.bismillah.academy.data.source.AcademyRepository
+import com.edsusantoo.bismillah.academy.data.source.local.entity.CourseEntity
+import com.edsusantoo.bismillah.academy.data.source.vo.Resource
 import com.edsusantoo.bismillah.academy.utils.FakeDataDummyTest
 import org.junit.Before
 import org.junit.Rule
@@ -25,7 +26,7 @@ class BookmarkViewModelTest {
 
 
     @Mock
-    lateinit var observeGetCourse: Observer<List<CourseEntity>>
+    lateinit var observeGetCourse: Observer<Resource<List<CourseEntity>>>
 
 
     @Before
@@ -40,16 +41,16 @@ class BookmarkViewModelTest {
     @Test
     fun getBookmark() {
 
-        val dummyCourses = FakeDataDummyTest.generateDummyCourses()
+        val resource: Resource<List<CourseEntity>> = Resource.success(FakeDataDummyTest.generateDummyCourses())
 
-        val courses = MutableLiveData<List<CourseEntity>>()
-        courses.value = dummyCourses
+        val dummyCourses = MutableLiveData<Resource<List<CourseEntity>>>()
+        dummyCourses.value = resource
 
-        `when`(academyRepository.getBookmarkedCourses()).thenReturn(courses)
+        `when`(academyRepository.getBookmarkedCourses()).thenReturn(dummyCourses)
 
         viewModel.getBookmark()?.observeForever(observeGetCourse)
 
-        verify(observeGetCourse).onChanged(dummyCourses)
+        verify(observeGetCourse).onChanged(resource)
 
 
     }

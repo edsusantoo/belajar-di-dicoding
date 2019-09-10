@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -12,12 +13,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.edsusantoo.bismillah.academy.R
-import com.edsusantoo.bismillah.academy.data.CourseEntity
+import com.edsusantoo.bismillah.academy.data.source.local.entity.CourseEntity
+import com.edsusantoo.bismillah.academy.data.source.vo.Status
 import com.edsusantoo.bismillah.academy.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_bookmark.*
 
 
 class BookmarkFragment : Fragment(), BookmarkFragmentCallback {
+
+
     private lateinit var viewModel: BookmarkViewModel
 
     companion object {
@@ -48,10 +52,25 @@ class BookmarkFragment : Fragment(), BookmarkFragmentCallback {
 
             val bookmarkAdapter = BookmarkAdapter(activity, this)
             progress_bar.visibility = View.VISIBLE
+
+
             viewModel.getBookmark()?.observe(this, Observer {
-                progress_bar.visibility = View.GONE
-                bookmarkAdapter.setListCourses(it)
-                bookmarkAdapter.notifyDataSetChanged()
+                if (it != null) {
+                    when (it.status) {
+                        Status.LOADING -> {
+                            progress_bar.visibility = View.VISIBLE
+                        }
+                        Status.SUCCESS -> {
+                            progress_bar.visibility = View.GONE
+                            bookmarkAdapter.setListCourses(it.data)
+                            bookmarkAdapter.notifyDataSetChanged()
+                        }
+                        else -> {
+                            progress_bar.visibility = View.GONE
+                            Toast.makeText(context, "Terjadi Kesalahan", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
             })
 
             rv_bookmark.layoutManager = LinearLayoutManager(context)

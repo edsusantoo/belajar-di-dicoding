@@ -3,8 +3,9 @@ package com.edsusantoo.bismillah.academy.ui.academy
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.edsusantoo.bismillah.academy.data.CourseEntity
 import com.edsusantoo.bismillah.academy.data.source.AcademyRepository
+import com.edsusantoo.bismillah.academy.data.source.local.entity.CourseEntity
+import com.edsusantoo.bismillah.academy.data.source.vo.Resource
 import com.edsusantoo.bismillah.academy.utils.FakeDataDummyTest
 import org.junit.Before
 import org.junit.Rule
@@ -19,6 +20,8 @@ import org.mockito.MockitoAnnotations
 @RunWith(JUnit4::class)
 class AcademyViewModelTest {
 
+    var USERNAME = "dicoding"
+
     @get:Rule
     val instantTaskExecutorRule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -27,7 +30,7 @@ class AcademyViewModelTest {
 
 
     @Mock
-    lateinit var observeGetCourse: Observer<List<CourseEntity>>
+    lateinit var observeGetCourse: Observer<Resource<List<CourseEntity>>>
 
     @Before
     fun setup() {
@@ -39,15 +42,16 @@ class AcademyViewModelTest {
     @Test
     fun getCourse() {
 
-        val dummyCourse: ArrayList<CourseEntity> = FakeDataDummyTest.generateDummyCourses()
+        val resource: Resource<List<CourseEntity>> = Resource.success(FakeDataDummyTest.generateDummyCourses())
 
-        val courses: MutableLiveData<List<CourseEntity>> = MutableLiveData()
-        courses.value = dummyCourse
+        val dummyResource: MutableLiveData<Resource<List<CourseEntity>>> = MutableLiveData()
+        dummyResource.value = resource
 
-        `when`(academyRepository.getAllCourses()).thenReturn(courses)
+        `when`(academyRepository.getAllCourses()).thenReturn(dummyResource)
 
-        viewModel.getCourse()?.observeForever(observeGetCourse)
+        viewModel.setUsername(USERNAME)
+        viewModel.course.observeForever(observeGetCourse)
 
-        verify(observeGetCourse).onChanged(dummyCourse)
+        verify(observeGetCourse).onChanged(resource)
     }
 }
